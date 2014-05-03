@@ -16,6 +16,7 @@ Package: npm2deb
 Architecture: all
 Depends: ${python:Depends}
  , ${misc:Depends}
+ , python-dateutil
  , node-github-url-from-git
  , npm
 Description: tool to debianize Node.js modules
