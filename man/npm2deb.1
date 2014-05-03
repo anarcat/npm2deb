@@ -1,0 +1,60 @@
+.TH npm2deb 1
+.SH NAME
+.B npm2deb
+- debianize nodejs modules available via npm
+
+.SH SYNOPSIS
+.B npm2deb\fR [\fB-D\fR \fIdebug\fR] { create | view | depends | rdepends | search | itp } \fInode_module\fR
+.br
+.B npm2deb\fR license {-l | license }
+
+.SH DESCRIPTION
+A script to make faster and easier packaging \fInodejs\fR modules already provided by \fInpm\fR.
+
+Take care to have defined \fBDEBEMAIL\fR (or \fBEMAIL\fR) and \fBDEBFULLNAME\fR environment variables correctly.
+
+.SH OPTIONS
+.IP
+.SS "optional arguments:"
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+show this help message and exit
+.TP
+\fB\-D\fR DEBUG, \fB\-\-debug\fR DEBUG
+set debug level
+.TP
+\fB\-v\fR, \fB\-\-version\fR
+show program's version number and exit
+.SS "commands:"
+.TP
+\fIcreate
+create the debian files
+.TP
+\fIview
+a summary view of a node module
+.TP
+\fIdepends
+show module dependencies in npm and debian
+.TP
+\fIrdepends
+show the reverse dependencies for module
+.TP
+\fIsearch
+look for module in debian project
+.TP
+\fIitp
+print a itp bug template
+.TP
+\fIlicense
+print license template and exit
+
+
+.SH AUTHOR
+Leo Iannacone <l3on@ubuntu.com>
+
+.SH COPYRIGHT
+Copyright   ©   2014   Leo Iannacone
+    http://leoiannacone.com
+
+License   GPLv3+:   GNU  GPL  version  3  or  later
+   <http://gnu.org/licenses/gpl.html>.
