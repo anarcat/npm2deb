@@ -1,0 +1,28 @@
+Source: npm2deb
+Section: python
+Priority: extra
+Maintainer: Debian Javascript Maintainers <pkg-javascript-devel@lists.alioth.debian.org>
+Uploaders: Leo Iannacone <l3on@ubuntu.com>
+Build-Depends:
+ debhelper (>= 8)
+ , python-all (>= 2.6.6-3~)
+ , python-dateutil
+Standards-Version: 3.9.5
+Homepage: https://github.com/LeoIannacone/npm2deb
+Vcs-Git: git://anonscm.debian.org/pkg-javascript/npm2deb.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-javascript/npm2deb.git
+
+Package: npm2deb
+Architecture: all
+Depends: ${python:Depends}
+ , ${misc:Depends}
+ , node-github-url-from-git
+ , npm
+Description: tool to debianize Node.js modules
+ Provides a script to make faster and easier packaging
+ Node.js modules available via npm.
+ .
+ It is also able to investigate modules dependencies
+ checking if they are already in the Debian repositories.
+ .
+ Node.js is an event-based server-side javascript engine.

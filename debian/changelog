@@ -1,0 +1,5 @@
+npm2deb (0.1.0-1) UNRELEASED; urgency=low
+
+  * Initial release (Closes: #746752)
+
+ -- Leo Iannacone <l3on@ubuntu.com>  Sat, 03 May 2014 11:33:27 +0200
