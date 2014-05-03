@@ -1,5 +1,5 @@
 Source: npm2deb
-Section: python
+Section: devel
 Priority: extra
 Maintainer: Debian Javascript Maintainers <pkg-javascript-devel@lists.alioth.debian.org>
 Uploaders: Leo Iannacone <l3on@ubuntu.com>
