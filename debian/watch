@@ -1,3 +1,0 @@
-version=3
-opts=filenamemangle=s/.*\/v?([\d\.-]+)\.tar\.gz/npm2deb-$1.tar.gz/ \
- https://github.com/LeoIannacone/npm2deb/tags .*/archive/v?([\d\.]+).tar.gz
