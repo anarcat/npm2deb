@@ -105,5 +105,36 @@ class debian(unittest.TestCase):
         n.create_manpages()
         self.assertEqual(self._get_debfile_line('manpages', 'jade.1'), "jade.1")
 
+    def test_watch_github(self):
+        n = Npm2Deb('serve-static')
+        n.create_base_debian()
+        n.create_watch()
+        line = self._get_debfile_line('watch', '/tags')
+        self.assertTrue(line is not None and len(line) > 0)
+
+    def test_watch_fakeupstream(self):
+        # must create a fakeupstream since we do not know about git url
+        n = Npm2Deb('yg-panache')
+        n.create_base_debian()
+        n.create_watch()
+        line = self._get_debfile_line('watch', '/fakeupstream')
+        self.assertTrue(line is not None and len(line) > 0)
+
+    def test_watch_github_with_no_tags(self):
+        # must fallback on fakeupstream if no tags in github
+        n = Npm2Deb('security')
+        n.create_base_debian()
+        n.create_watch()
+        line = self._get_debfile_line('watch', '/fakeupstream')
+        self.assertTrue(line is not None and len(line) > 0)
+
+    def test_install_bin(self):
+        n = Npm2Deb('mocha')
+        n.create_base_debian()
+        n.create_links()
+        line = self._get_debfile_line('links', 'mocha')
+        self.assertTrue(line == 'usr/lib/nodejs/mocha/bin/mocha usr/bin/mocha')
+
+
 if __name__ == '__main__':
     unittest.main()
