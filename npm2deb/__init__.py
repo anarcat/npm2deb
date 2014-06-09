@@ -68,9 +68,6 @@ class Npm2Deb(object):
         self.date = datetime.now(tz.tzlocal())
         self.read_package_info()
 
-    def show_itp(self):
-        print self._get_ITP()
-
     def start(self):
         self.download()
         utils.change_dir(self.debian_name)
@@ -93,7 +90,7 @@ class Npm2Deb(object):
 
     def create_itp_bug(self):
         utils.debug(1, "creating wnpp bug template")
-        utils.create_file('%s_itp.mail' % self.debian_name, self._get_ITP())
+        utils.create_file('%s_itp.mail' % self.debian_name, self.get_ITP())
 
     def clean(self):
         utils.debug(1, "cleaning directory")
@@ -111,16 +108,29 @@ class Npm2Deb(object):
 
     def create_watch(self):
         args = {}
-        if self.upstream_repo_url and \
-                self.upstream_repo_url.find('github') >= 0:
-            args['homepage'] = self.upstream_repo_url
-            args['debian_name'] = self.debian_name
-            content = templates.WATCH_GITHUB % args
-        else:
-            content = "# FIX_ME Please take a look " \
-                "at https://wiki.debian.org/debian/watch/\n" \
-                "Homepage is %s\n" % self.homepage
-        utils.create_debian_file('watch', content)
+        args['debian_name'] = self.debian_name
+        args['dversionmangle'] = 's/\?(debian|dfsg|ds|deb)\d*$//'
+        args['url'] = self.upstream_repo_url
+        args['module'] = self.name
+        try:
+            if self.upstream_repo_url.find('github') >= 0:
+                content = utils.get_watch('github') % args
+            else:
+                # if not supported, got to fakeupstream
+                raise ValueError
+
+            utils.create_debian_file('watch', content)
+            # test watch with uscan, raise exception if status is not 0
+            info = getstatusoutput('uscan --watchfile "debian/watch" '
+                                   '--package "{}" '
+                                   '--upstream-version 0 --no-download'
+                                   .format(self.debian_name))
+            if info[0] != 0:
+                raise ValueError
+
+        except ValueError:
+            content = utils.get_watch('fakeupstream') % args
+            utils.create_debian_file('watch', content)
 
     def create_examples(self):
         if os.path.isdir('examples'):
@@ -135,10 +145,11 @@ class Npm2Deb(object):
     def create_links(self):
         links = []
         dest = self.debian_dest
-        if os.path.isdir('bin'):
-            for script in os.listdir('bin'):
-                links.append("%s/bin/%s usr/bin/%s" %
-                            (dest, script, script.replace('.js', '')))
+        if 'bin' in self.json:
+            for script in self.json['bin']:
+                orig = os.path.normpath(self.json['bin'][script])
+                links.append("%s/%s usr/bin/%s" %
+                            (dest, orig, script))
         if len(links) > 0:
             content = '\n'.join(links)
             utils.create_debian_file('links', content)
@@ -308,7 +319,7 @@ class Npm2Deb(object):
             utils.debug(2, "renaming %s to %s" % (self.name, self.debian_name))
             os.rename(self.name, self.debian_name)
 
-    def _get_ITP(self):
+    def get_ITP(self):
         args = {}
         args['debian_author'] = self.debian_author
         args['debian_name'] = self.debian_name

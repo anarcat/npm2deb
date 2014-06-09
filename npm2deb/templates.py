@@ -66,7 +66,9 @@ License: %(debian_license_name)s
 %(debian_license)s
 """
 
-WNPP = """Subject: ITP: %(debian_name)s -- %(description)s
+WNPP = """To: submit@bugs.debian.org
+Subject: ITP: %(debian_name)s -- %(description)s
+
 Package: wnpp
 Severity: wishlist
 Owner: %(debian_author)s
@@ -256,9 +258,21 @@ LICENSES['Expat'] = """Expat
  SOFTWARE.
 """
 
-WATCH_GITHUB = """version=3
+WATCH = {}
+
+WATCH['github'] = """version=3
 opts=\\
-dversionmangle=s/\?(debian|dfsg|ds|deb)\d*$//,\\
+dversionmangle=%(dversionmangle)s,\\
 filenamemangle=s/.*\/v?([\d\.-]+)\.tar\.gz/%(debian_name)s-$1.tar.gz/ \\
- %(homepage)s/tags .*/archive/v?([\d\.]+).tar.gz
+ %(url)s/tags .*/archive/v?([\d\.]+).tar.gz
+"""
+
+WATCH['fakeupstream'] = """version=3
+# It is not recommended use fakeupstream. Please investigate more.
+# Origin url: %(url)s
+# Take a look at https://wiki.debian.org/debian/watch/
+# See also fakeupstream: http://anonscm.debian.org/viewvc/qa/trunk/cgi-bin/fakeupstream.cgi?view=markup
+opts=\\
+dversionmangle=%(dversionmangle)s \\
+ http://qa.debian.org/cgi-bin/fakeupstream.cgi?upstream=npmjs/%(module)s .*=%(module)s-(\d.*)\.(?:tgz|tar\.(?:gz|bz2|xz))
 """
