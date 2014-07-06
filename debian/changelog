@@ -1,5 +1,5 @@
-npm2deb (0.2.0-1) UNRELEASED; urgency=medium
+npm2deb (0.2.0-1) unstable; urgency=medium
 
   * Initial release (Closes: #746752)
 
- -- Leo Iannacone <l3on@ubuntu.com>  Sat, 03 May 2014 11:33:27 +0200
+ -- Leo Iannacone <l3on@ubuntu.com>  Mon, 07 Jul 2014 01:21:51 +0200
