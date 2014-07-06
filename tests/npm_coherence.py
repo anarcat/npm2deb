@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import sys
 import os
 import inspect
@@ -128,12 +130,32 @@ class debian(unittest.TestCase):
         line = self._get_debfile_line('watch', '/fakeupstream')
         self.assertTrue(line is not None and len(line) > 0)
 
+    def test_repository_defined_as_string(self):
+        n = Npm2Deb('ipaddr.js')
+        self.assertEqual(n.upstream_repo_url,
+                         'https://github.com/whitequark/ipaddr.js')
+
     def test_install_bin(self):
         n = Npm2Deb('mocha')
         n.create_base_debian()
         n.create_links()
         line = self._get_debfile_line('links', 'mocha')
-        self.assertTrue(line == 'usr/lib/nodejs/mocha/bin/mocha usr/bin/mocha')
+        self.assertEqual(line, 'usr/lib/nodejs/mocha/bin/mocha usr/bin/mocha')
+
+    def test_write_tests(self):
+        n = Npm2Deb('debug')
+        n.create_base_debian()
+        n.create_tests()
+        line = self._get_debfile_line('tests/control', 'node-debug')
+        self.assertEqual(line, 'Depends: node-debug')
+        line = self._get_debfile_line('tests/require', 'debug')
+        self.assertEqual(line, """nodejs -e "require('debug');\"""")
+
+    ## Issues fixed
+    def test_issue_10(self):
+        n = Npm2Deb('lastfm')
+        n.create_base_debian()
+        n.create_control()
 
 
 if __name__ == '__main__':
