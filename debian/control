@@ -19,6 +19,7 @@ Depends: ${python:Depends}
  , python3-dateutil
  , node-github-url-from-git
  , npm
+ , devscripts
 Description: tool to debianize Node.js modules
  Provides a script to make faster and easier packaging
  Node.js modules available via npm.
