@@ -5,8 +5,8 @@ Maintainer: Leo Iannacone <l3on@ubuntu.com>
 Uploaders: Debian Javascript Maintainers <pkg-javascript-devel@lists.alioth.debian.org>
 Build-Depends:
  debhelper (>= 8)
- , python-all (>= 2.6.6-3~)
- , python-dateutil
+ , python3-all (>= 3.2.3-6~)
+ , python3-dateutil
 Standards-Version: 3.9.5
 Homepage: https://github.com/LeoIannacone/npm2deb
 Vcs-Git: git://anonscm.debian.org/pkg-javascript/npm2deb.git
@@ -16,7 +16,7 @@ Package: npm2deb
 Architecture: all
 Depends: ${python:Depends}
  , ${misc:Depends}
- , python-dateutil
+ , python3-dateutil
  , node-github-url-from-git
  , npm
 Description: tool to debianize Node.js modules
