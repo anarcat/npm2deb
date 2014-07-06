@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 CHANGELOG = """%(debian_name)s (%(version)s-1) unstable; urgency=low
 
   * Initial release (Closes: #nnnn)
@@ -21,6 +19,7 @@ Standards-Version: %(Standards-Version)s
 Homepage: %(Homepage)s
 Vcs-Git: %(Vcs-Git)s
 Vcs-Browser: %(Vcs-Browser)s
+XS-Testsuite: autopkgtest
 
 Package: %(Package)s
 Architecture: all
@@ -72,6 +71,7 @@ Subject: ITP: %(debian_name)s -- %(description)s
 Package: wnpp
 Severity: wishlist
 Owner: %(debian_author)s
+X-Debbugs-CC: debian-devel@lists.debian.org
 
 * Package name    : %(debian_name)s
   Version         : %(version)s
@@ -273,6 +273,18 @@ WATCH['fakeupstream'] = """version=3
 # Take a look at https://wiki.debian.org/debian/watch/
 # See also fakeupstream: http://anonscm.debian.org/viewvc/qa/trunk/cgi-bin/fakeupstream.cgi?view=markup
 opts=\\
-dversionmangle=%(dversionmangle)s \\
+dversionmangle=%(dversionmangle)s,\\
+filenamemangle=s/.*=// \\
  http://qa.debian.org/cgi-bin/fakeupstream.cgi?upstream=npmjs/%(module)s .*=%(module)s-(\d.*)\.(?:tgz|tar\.(?:gz|bz2|xz))
+"""
+
+TESTS = {}
+
+TESTS['control'] = """Tests: require
+Depends: %(debian_name)s
+"""
+
+TESTS['require'] = """#!/bin/sh
+set -e
+nodejs -e "require('%(name)s');"
 """

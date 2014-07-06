@@ -1,14 +1,9 @@
-from json import loads as parseJSON
-from re import findall
-from npm2deb.utils import debug
+from json import loads as _parseJSON
+from re import findall as _findall
+from urllib.request import urlopen as _urlopen
+from subprocess import getstatusoutput as _getstatusoutput
 
-try:
-    from urllib.request import urlopen
-    from subprocess import getstatusoutput
-except ImportError:
-    from commands import getstatusoutput
-    from urllib2 import urlopen
-
+from npm2deb.utils import debug as _debug
 
 DB_URL = 'https://wiki.debian.org/Javascript/Nodejs/Database'
 
@@ -20,10 +15,10 @@ class Mapper(object):
         if self.INSTANCE is not None:
             raise ValueError("Mapper is a Singleton. "
                              "Please use get_instance method.")
-        debug(2, 'loading database from %s' % DB_URL)
-        data = findall('{{{(.*)}}}', urlopen("%s?action=raw"
-                       % DB_URL).read().replace('\n', ''))[0]
-        self.json = parseJSON(data)
+        _debug(2, 'loading database from %s' % DB_URL)
+        data = _findall('{{{(.*)}}}', _urlopen("%s?action=raw"
+                        % DB_URL).read().decode('utf-8').replace('\n', ''))[0]
+        self.json = _parseJSON(data)
         self._warnings = {}
         self.reset_warnings()
 
@@ -60,7 +55,7 @@ class Mapper(object):
         if not result['name']:
             return result
 
-        madison = getstatusoutput(
+        madison = _getstatusoutput(
             'apt-cache madison "%s" | grep Sources' % result['name'])
 
         if madison[0] != 0:

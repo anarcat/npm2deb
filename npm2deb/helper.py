@@ -1,27 +1,25 @@
 # -*- coding: utf-8 -*-
-from json import loads as parseJSON
-from xml.dom import minidom
-from npm2deb import Npm2Deb
-from npm2deb.utils import debug
-from npm2deb.mapper import Mapper
+from json import loads as _parseJSON
+from xml.dom import minidom as _minidom
+from urllib.request import urlopen as _urlopen
+from subprocess import getstatusoutput as _getstatusoutput
+import re as _re
 
-try:
-    from urllib.request import urlopen
-    from subprocess import getstatusoutput
-except ImportError:
-    from commands import getstatusoutput
-    from urllib2 import urlopen
+from npm2deb import Npm2Deb as _Npm2Deb
+from npm2deb.utils import debug as _debug
+from npm2deb.mapper import Mapper as _Mapper
+
 
 DO_PRINT = False
 
 
 def my_print(what):
     if DO_PRINT:
-        print(what.encode('utf-8'))
+        print(what)
 
 
 def search_for_repository(module):
-    if isinstance(module, Npm2Deb):
+    if isinstance(module, _Npm2Deb):
         module = module.name
     repositories = ['collab-maint', 'pkg-javascript']
     formatted = "  {0:40} -- {1}"
@@ -29,11 +27,11 @@ def search_for_repository(module):
     result = {}
     my_print("Looking for existing repositories:")
     for repo in repositories:
-        debug(1, "search for %s in %s" % (module, repo))
+        _debug(1, "search for %s in %s" % (module, repo))
         url_base = "http://anonscm.debian.org/gitweb"
-        data = urlopen("%s/?a=project_list&pf=%s&s=%s" %
-                      (url_base, repo, module)).read()
-        dom = minidom.parseString(data)
+        data = _urlopen("%s/?a=project_list&pf=%s&s=%s" %
+                       (url_base, repo, module)).read()
+        dom = _minidom.parseString(data)
         for row in dom.getElementsByTagName('tr')[1:]:
             try:
                 columns = row.getElementsByTagName('td')
@@ -51,55 +49,45 @@ def search_for_repository(module):
 
 
 def search_for_bug(module):
-    if isinstance(module, Npm2Deb):
+    if isinstance(module, _Npm2Deb):
         module = module.name
-    url = 'http://wnpp.debian.net/'
-    '?type%5B%5D=ITA&type%5B%5D=ITP&type%5B%5D=O&type%5B%5D=RFA' \
-    '&type%5B%5D=RFH&type%5B%5D=RFP&project=&description=&owner%5B%5D=yes' \
-    '&owner%5B%5D=no&col%5B%5D=type&col%5B%5D=description&sort=project'
     my_print('Looking for wnpp bugs:')
-    debug(1, "getting bugs from http://wnpp.debian.net")
-    data = urlopen(url).read()
-    rows = data.split('class="data_table">')[1].split('</table>')[0].split('\n')
-    found = False
-    formatted = "  #{0}  {1:>3}:  {2:25} -- {3}"
-    result = []
-    for row in rows:
-        row = row.replace('&nbsp;', '')
-        if len(row) > 0:
+    _debug(1, "calling wnpp-check")
+    info = _getstatusoutput('wnpp-check %s' % module)
+    if info[0] == 0:
+        my_print('  None')
+        return []
+    else:
+        lines = info[1].split('\n')
+        formatted = "  #{0}  {1:>3}:  {2:25} -- {3}"
+        result = []
+        for line in lines:
             try:
                 bug = {}
-                dom = minidom.parseString(row)
-                tmp = dom.getElementsByTagName('a')[0]
-                bug["num"] = tmp.getAttribute('href').split('?bug=')[1]
-                bug["package"] = tmp.childNodes[0].data
-                tmp = dom.getElementsByTagName('td')[-1]
-                bug["type"] = tmp.getAttribute('class')
-                bug["description"] = tmp.childNodes[0].childNodes[0].data
-                if bug["package"].find(module) >= 0 or \
-                        bug["description"].find(module) >= 0:
-                    found = True
-                    result.append(bug)
-                    my_print(formatted.format(bug["num"],
-                                              bug["type"],
-                                              bug["package"],
-                                              bug["description"]))
+                match = _re.match('\((.*) - #(\d+).*\) (.*) (.*)$', line)
+                bug['num'] = match.group(2)
+                bug['type'] = match.group(1)
+                bug['package'] = match.group(4)
+                bug['url'] = match.group(3)
+                result.append(bug)
+                my_print(formatted.format(bug["num"],
+                                          bug["type"],
+                                          bug["package"],
+                                          bug["url"]))
             except:
-                continue
-    if not found:
-        my_print('  None')
-    return result
+                    continue
+        return result
 
 
 def search_for_reverse_dependencies(module):
-    if isinstance(module, Npm2Deb):
+    if isinstance(module, _Npm2Deb):
         module = module.name
     url = "http://registry.npmjs.org/-/_view/dependedUpon?startkey=" \
         + "[%%22%(name)s%%22]&endkey=[%%22%(name)s%%22,%%7B%%7D]&group_level=2"
     url = url % {'name': module}
-    debug(1, "opening url %s" % url)
-    data = urlopen(url).read()
-    data = parseJSON(data)
+    _debug(1, "opening url %s" % url)
+    data = _urlopen(url).read().decode('utf-8')
+    data = _parseJSON(data)
     result = []
     if 'rows' in data and len(data['rows']) > 0:
         my_print("Reverse Depends:")
@@ -115,22 +103,22 @@ def search_for_reverse_dependencies(module):
 def search_for_dependencies(module, recursive=False, force=False,
                             prefix=u'', expanded_dependencies=[]):
     try:
-        if not isinstance(module, Npm2Deb):
-            debug(1, 'getting dependencies - calling npm view %s' % module)
-            npm_out = getstatusoutput('npm view "%s" '
-                                      'dependencies --json 2>/dev/null'
-                                      % module)[1]
-            dependencies = parseJSON(npm_out)
+        if not isinstance(module, _Npm2Deb):
+            _debug(1, 'getting dependencies - calling npm view %s' % module)
+            npm_out = _getstatusoutput('npm view "%s" '
+                                       'dependencies --json 2>/dev/null'
+                                       % module)[1]
+            dependencies = _parseJSON(npm_out)
         else:
             dependencies = module.json['dependencies']
             module = module.name
     except ValueError:
         return None
 
-    mapper = Mapper.get_instance()
+    mapper = _Mapper.get_instance()
     result = {}
 
-    keys = dependencies.keys()
+    keys = list(dependencies.keys())
     last_dep = False
     for dep in keys:
         if dep == keys[-1]:
@@ -158,19 +146,19 @@ def search_for_dependencies(module, recursive=False, force=False,
 
 def search_for_builddep(module):
     try:
-        if not isinstance(module, Npm2Deb):
-            debug(1, 'getting builddep - calling npm view %s' % module)
-            npm_out = getstatusoutput('npm view "%s" '
-                                      'devDependencies --json 2>/dev/null'
-                                      % module)[1]
-            builddeb = parseJSON(npm_out)
+        if not isinstance(module, _Npm2Deb):
+            _debug(1, 'getting builddep - calling npm view %s' % module)
+            npm_out = _getstatusoutput('npm view "%s" '
+                                       'devDependencies --json 2>/dev/null'
+                                       % module)[1]
+            builddeb = _parseJSON(npm_out)
         else:
             builddeb = module.json['devDependencies']
             module = module.name
     except ValueError:
         return None
 
-    mapper = Mapper.get_instance()
+    mapper = _Mapper.get_instance()
     result = {}
 
     for dep in builddeb:
