@@ -1,3 +1,9 @@
+npm2deb (0.2.1-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Leo Iannacone <l3on@ubuntu.com>  Sat, 23 Aug 2014 17:51:13 +0200
+
 npm2deb (0.2.0-1) unstable; urgency=medium
 
   * Initial release (Closes: #746752)
