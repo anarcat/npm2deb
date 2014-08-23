@@ -59,14 +59,22 @@ def get_license(license):
         result = _templates.LICENSES['MIT']
     elif name.startswith('expat'):
         result = _templates.LICENSES['Expat']
+    elif name.startswith('bsd4'):
+        result = _templates.LICENSES['BSD-4-clause']
+    elif name.startswith('bsd2'):
+        result = _templates.LICENSES['BSD-2-clause']
     elif name.startswith('bsd'):
-        result = _templates.LICENSES['BSD']
+        result = _templates.LICENSES['BSD-3-clause']
     elif name.startswith('artistic'):
         result = _templates.LICENSES['Artistic']
     elif name.startswith('apache'):
         result = _templates.LICENSES['Apache']
+    elif name.startswith('isc'):
+        result = _templates.LICENSES['ISC']
     else:
-        result = 'FIX_ME please specify a license description'
+        result = 'FIX_ME specify a license, see: ' \
+                 'https://www.debian.org/doc/packaging-manuals/' \
+                 'copyright-format/1.0/#license-specification'
     return result
 
 
