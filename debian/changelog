@@ -1,3 +1,12 @@
+npm2deb (0.2.3-1) unstable; urgency=medium
+
+  * Imported Upstream version 0.2.3:
+    + Drop usage of XS-Testsuite in control template which causes
+      lintian xs-testsuite-header-in-debian-control (Closes: #797677)
+    + Install bash_completition in usr/share/bash-completion/completions
+
+ -- Leo Iannacone <info@leoiannacone.com>  Sun, 06 Sep 2015 10:03:21 +0200
+
 npm2deb (0.2.2-1) unstable; urgency=medium
 
   * Imported Upstream version 0.2.2
