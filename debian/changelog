@@ -1,3 +1,11 @@
+npm2deb (0.2.4-1) unstable; urgency=medium
+
+  * Imported Upstream version 0.2.4:
+    + template debian/control: set Priority to optional rather than
+      extra. Thanks to Ross Gammon. (Closes: #798275) 
+
+ -- Leo Iannacone <info@leoiannacone.com>  Tue, 08 Sep 2015 20:03:52 +0200
+
 npm2deb (0.2.3-1) unstable; urgency=medium
 
   * Imported Upstream version 0.2.3:
