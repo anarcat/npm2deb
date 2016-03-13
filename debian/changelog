@@ -1,3 +1,18 @@
+npm2deb (0.2.5-1) unstable; urgency=medium
+
+  * Imported Upstream version 0.2.5:
+    + Search for NEW packages. Thanks to Thorsten Alteholz (Closes: #798867)
+    + Bump debhelper version to 9 and standards version to 3.9.7.
+      Thanks to Ondřej Nový.
+    + Change Vcs-* URLs to https. Thanks to Ondřej Nový.
+  * debian/control:
+    + Bump Standars-Version 3.9.7
+    + Bump debhelper 9
+    + Fix VCS-* insecure fields
+  * debian/compat: bump compat 9
+
+ -- Leo Iannacone <l3on@ubuntu.com>  Sun, 13 Mar 2016 09:45:21 +0000
+
 npm2deb (0.2.4-1) unstable; urgency=medium
 
   * Imported Upstream version 0.2.4:
