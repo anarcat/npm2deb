@@ -10,9 +10,9 @@ import re as _re
 from npm2deb import utils, templates
 from npm2deb.mapper import Mapper
 
-VERSION = '0.2.4'
-DEBHELPER = 8
-STANDARDS_VERSION = '3.9.6'
+VERSION = '0.2.5'
+DEBHELPER = 9
+STANDARDS_VERSION = '3.9.7'
 
 
 class Npm2Deb(object):
@@ -195,10 +195,11 @@ class Npm2Deb(object):
         args['debhelper'] = self.debian_debhelper
         args['Standards-Version'] = self.debian_standards
         args['Homepage'] = self.homepage
-        args['Vcs-Git'] = 'git://anonscm.debian.org/pkg-javascript/%s.git' \
+        args['Vcs-Git'] = 'https://anonscm.debian.org/' + \
+                          'git/pkg-javascript/%s.git' \
                           % self.debian_name
-        args['Vcs-Browser'] = 'http://anonscm.debian.org/' + \
-                              'gitweb/?p=pkg-javascript/%s.git' \
+        args['Vcs-Browser'] = 'https://anonscm.debian.org/' + \
+                              'cgit/pkg-javascript/%s.git' \
                               % self.debian_name
         args['Package'] = self.debian_name
         args['Depends'] = self._get_Depends()
