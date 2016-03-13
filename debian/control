@@ -4,7 +4,7 @@ Priority: extra
 Maintainer: Debian Javascript Maintainers <pkg-javascript-devel@lists.alioth.debian.org>
 Uploaders: Leo Iannacone <l3on@ubuntu.com>
 Build-Depends:
- debhelper (>= 8)
+ debhelper (>= 9)
  , dh-python
  , python3-all
  , python3-dateutil
