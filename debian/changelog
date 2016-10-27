@@ -1,3 +1,11 @@
+npm2deb (0.2.5-2) UNRELEASED; urgency=medium
+
+  * Team upload
+  * Use rmadison for finding existing packages.
+    Thanks to Shanavas M (Closes: #836182)
+
+ -- Pirate Praveen <praveen@debian.org>  Thu, 27 Oct 2016 22:02:48 +0530
+
 npm2deb (0.2.5-1) unstable; urgency=medium
 
   * Imported Upstream version 0.2.5:
