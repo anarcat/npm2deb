@@ -19,7 +19,7 @@ Architecture: all
 Depends: ${python3:Depends}
  , ${misc:Depends}
  , python3-dateutil
- , node-github-url-from-git
+ , node-github-url-from-git (>= 1.4.0~)
  , npm
  , devscripts
 Description: tool to help debianize Node.js modules
