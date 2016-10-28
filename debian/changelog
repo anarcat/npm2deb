@@ -5,6 +5,7 @@ npm2deb (0.2.5-2) UNRELEASED; urgency=medium
     Thanks to Shanavas M (Closes: #836182)
   * Update minimum version of node-github-url-from-git
     (for #840929)
+  * Convert package names to lower case (Closes: #840226)
 
  -- Pirate Praveen <praveen@debian.org>  Thu, 27 Oct 2016 22:02:48 +0530
 
