@@ -1,13 +1,15 @@
-npm2deb (0.2.5-2) UNRELEASED; urgency=medium
+npm2deb (0.2.5-3) UNRELEASED; urgency=medium
 
   * Team upload
-  * Use rmadison for finding existing packages.
-    Thanks to Shanavas M (Closes: #836182)
   * Update minimum version of node-github-url-from-git
     (for #840929)
-  * Convert package names to lower case (Closes: #840226)
 
- -- Pirate Praveen <praveen@debian.org>  Thu, 27 Oct 2016 22:02:48 +0530
+  [ Shanavas M ]
+  * Use rmadison for finding existing packages (Closes: #836182)
+  * Convert package names to lower case (Closes: #840226)
+  * Fix crash when url is invalid (Closes: #840169) 
+
+ -- Pirate Praveen <praveen@debian.org>  Sat, 29 Oct 2016 13:39:33 +0530
 
 npm2deb (0.2.5-1) unstable; urgency=medium
 
