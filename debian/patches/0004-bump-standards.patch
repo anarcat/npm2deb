@@ -1,0 +1,23 @@
+From 4ba137d4729649a5f8f081185513bc70a5c0d55c Mon Sep 17 00:00:00 2001
+From: Pirate Praveen Arimbrathodiyil <praveen@debian.org>
+Date: Sat, 29 Oct 2016 19:43:59 +0530
+Subject: [PATCH] bump standards version
+
+bump standards version of generated packages to 3.9.8
+---
+ npm2deb/__init__.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/npm2deb/__init__.py b/npm2deb/__init__.py
+index 1eabf0b..5164e29 100644
+--- a/npm2deb/__init__.py
++++ b/npm2deb/__init__.py
+@@ -12,7 +12,7 @@
+ 
+ VERSION = '0.2.5'
+ DEBHELPER = 9
+-STANDARDS_VERSION = '3.9.7'
++STANDARDS_VERSION = '3.9.8'
+ 
+ 
+ class Npm2Deb(object):
