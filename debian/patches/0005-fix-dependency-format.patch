@@ -1,0 +1,21 @@
+From 4dc756ef5849bf51ee41938f33ca4680d6a0829b Mon Sep 17 00:00:00 2001
+From: Suhail P <psuhailp@gmail.com>
+Date: Fri, 28 Oct 2016 12:20:20 +0000
+Subject: [PATCH] changing CONTROL file dependency package version format
+
+---
+ npm2deb/__init__.py | 1 +
+ 1 file changed, 1 insertion(+)
+
+Index: npm2deb/npm2deb/__init__.py
+===================================================================
+--- npm2deb.orig/npm2deb/__init__.py
++++ npm2deb/npm2deb/__init__.py
+@@ -470,6 +470,7 @@ class Npm2Deb(object):
+                     dep_debian = "%s (%s)" % (name, version)
+                 else:
+                     dep_debian = name
++                dep_debian = '>= '.join(dep_debian.split('^'))
+                 depends.append(dep_debian)
+ 
+         return '\n , '.join(depends)

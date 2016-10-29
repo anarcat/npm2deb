@@ -2,3 +2,4 @@
 0002-convert-to-lowercase.patch
 0003-fix-crash.patch
 0004-bump-standards.patch
+0005-fix-dependency-format.patch
