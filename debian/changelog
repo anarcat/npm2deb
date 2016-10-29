@@ -1,4 +1,4 @@
-npm2deb (0.2.5-3) UNRELEASED; urgency=medium
+npm2deb (0.2.5-3) unstable; urgency=medium
 
   * Team upload
   * Update minimum version of node-github-url-from-git
@@ -9,7 +9,7 @@ npm2deb (0.2.5-3) UNRELEASED; urgency=medium
   * Convert package names to lower case (Closes: #840226)
   * Fix crash when url is invalid (Closes: #840169) 
 
- -- Pirate Praveen <praveen@debian.org>  Sat, 29 Oct 2016 13:39:33 +0530
+ -- Pirate Praveen <praveen@debian.org>  Sat, 29 Oct 2016 13:57:45 +0530
 
 npm2deb (0.2.5-1) unstable; urgency=medium
 
