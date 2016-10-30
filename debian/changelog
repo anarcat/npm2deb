@@ -1,7 +1,9 @@
 npm2deb (0.2.5-4) UNRELEASED; urgency=medium
 
   * Bump standards version of generated packages to 3.9.8
-  * Fix dependency version formats (conver ^ to >=) (Closes: #840207)
+
+  [ Suhail P ]
+  * Fix dependency version formats (convert ^ to >=) (Closes: #840207)
 
  -- Pirate Praveen <praveen@debian.org>  Sat, 29 Oct 2016 19:45:20 +0530
 
