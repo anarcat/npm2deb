@@ -1,7 +1,7 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: npm2deb
-Upstream-Contact: https://github.com/LeoIannaone/npm2deb/issues
-Source: https://github.com/LeoIannaone/npm2deb
+Upstream-Contact: https://github.com/LeoIannacone/npm2deb/issues
+Source: https://github.com/LeoIannacone/npm2deb
 
 Files: *
 Copyright: 2014 Leo Iannacone <l3on@ubuntu.com>
