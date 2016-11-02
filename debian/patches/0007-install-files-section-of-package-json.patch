@@ -1,0 +1,105 @@
+From 6e2827d31e34237c1b5edb9274fd1ebc97e227f6 Mon Sep 17 00:00:00 2001
+From: Shanavas M <shanavas.m2@gmail.com>
+Date: Mon, 31 Oct 2016 22:52:11 +0300
+Subject: [PATCH 1/2] Install files from directories and files fields
+
+https://docs.npmjs.com/files/package.json#directories
+https://docs.npmjs.com/files/package.json#files
+
+Fixes https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=841995
+---
+ npm2deb/__init__.py | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/npm2deb/__init__.py b/npm2deb/__init__.py
+index 52fe76f..0e2bf16 100644
+--- a/npm2deb/__init__.py
++++ b/npm2deb/__init__.py
+@@ -158,6 +158,19 @@ def create_install(self):
+             libs.append('bin')
+         if _os.path.isdir('lib'):
+             libs.append('lib')
++
++        # install files from directories field
++        if 'directories' in self.json:
++            directories = self.json['directories']
++            if 'bin' in directories:
++                libs.append(directories['bin'])
++            if 'lib' in directories:
++                libs.append(directories['lib'])
++
++        # install files from files field
++        if 'files' in self.json:
++            libs += self.json['files']
++
+         # install main if not in a subpath
+         if 'main' in self.json:
+             main = self.json['main']
+@@ -171,6 +184,7 @@ def create_install(self):
+                 libs.append('index.js')
+             else:
+                 libs.append('*.js')
++
+         for filename in libs:
+             content += "%s %s/\n" % (filename, self.debian_dest)
+         utils.create_debian_file('install', content)
+
+From 342cb56f28419d28a30ae17cd0526cf2fdeec02b Mon Sep 17 00:00:00 2001
+From: Shanavas M <shanavas.m2@gmail.com>
+Date: Mon, 31 Oct 2016 23:18:00 +0300
+Subject: [PATCH 2/2] Remove duplicate entries from debian/install file
+
+---
+ npm2deb/__init__.py | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/npm2deb/__init__.py b/npm2deb/__init__.py
+index 0e2bf16..ed0b5d1 100644
+--- a/npm2deb/__init__.py
++++ b/npm2deb/__init__.py
+@@ -153,23 +153,23 @@ def create_links(self):
+ 
+     def create_install(self):
+         content = ''
+-        libs = ['package.json']
++        libs = {'package.json'}
+         if _os.path.isdir('bin'):
+-            libs.append('bin')
++            libs.add('bin')
+         if _os.path.isdir('lib'):
+-            libs.append('lib')
++            libs.add('lib')
+ 
+         # install files from directories field
+         if 'directories' in self.json:
+             directories = self.json['directories']
+             if 'bin' in directories:
+-                libs.append(directories['bin'])
++                libs.add(directories['bin'])
+             if 'lib' in directories:
+-                libs.append(directories['lib'])
++                libs.add(directories['lib'])
+ 
+         # install files from files field
+         if 'files' in self.json:
+-            libs += self.json['files']
++            libs = libs.union(self.json['files'])
+ 
+         # install main if not in a subpath
+         if 'main' in self.json:
+@@ -178,12 +178,12 @@ def create_install(self):
+             if main == 'index':
+                 main = 'index.js'
+             if not main.find('/') > 0:
+-                libs.append(_os.path.normpath(main))
++                libs.add(_os.path.normpath(main))
+         else:
+             if _os.path.exists('index.js'):
+-                libs.append('index.js')
++                libs.add('index.js')
+             else:
+-                libs.append('*.js')
++                libs.add('*.js')
+ 
+         for filename in libs:
+             content += "%s %s/\n" % (filename, self.debian_dest)

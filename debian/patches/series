@@ -4,3 +4,4 @@
 0004-bump-standards.patch
 0005-fix-dependency-format.patch
 0006-more-automation.patch
+0007-install-files-section-of-package-json.patch
