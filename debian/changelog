@@ -7,7 +7,7 @@ npm2deb (0.2.5-4) UNRELEASED; urgency=medium
 
   [ Suhail P ]
   * Fix dependency version formats (convert ^ to >=) (Closes: #840207)
-  * Automate upto deb file creation (add uscan, uupdate and dpkg-buildpackage)
+  * Automate up to deb file creation (add uscan, uupdate and dpkg-buildpackage)
     (Closes: #840174)
 
   [ Shanavas M ]
