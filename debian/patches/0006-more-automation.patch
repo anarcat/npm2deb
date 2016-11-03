@@ -1,7 +1,7 @@
 From f496bbfd8398b0ec0e3501780350a626a3271bbe Mon Sep 17 00:00:00 2001
 From: Suhail P <psuhailp@gmail.com>
 Date: Wed, 2 Nov 2016 08:58:04 +0000
-Subject: [PATCH 1/4] automating uscan and uupdate
+Subject: [PATCH 1/7] automating uscan and uupdate
 
 ---
  npm2deb/__init__.py | 19 ++++++++++++++-----
@@ -20,7 +20,15 @@ Index: npm2deb/npm2deb/__init__.py
  import os as _os
  import re as _re
  
-@@ -85,6 +86,63 @@ class Npm2Deb(object):
+@@ -36,6 +37,7 @@ class Npm2Deb(object):
+         self.debian_standards = STANDARDS_VERSION
+         self.debian_debhelper = DEBHELPER
+         self.noclean = False
++        self.uscan_info = ''
+         if args:
+             if 'upstream_license' in args and args['upstream_license']:
+                 self.upstream_license = args['upstream_license']
+@@ -85,6 +87,82 @@ class Npm2Deb(object):
          utils.change_dir('..')
          self.create_itp_bug()
  
@@ -29,11 +37,10 @@ Index: npm2deb/npm2deb/__init__.py
 +        Try building deb package after creating required files using start().
 +        'uscan', 'uupdate' and 'dpkg-buildpackage' are run if debian/watch is OK.
 +        """
-+        uscan_info = self.test_uscan()
-+        if uscan_info[0] == 0:
++        if self.uscan_info[0] == 0:
 +            self.run_uscan()
 +            
-+            remote_file_name = uscan_info[1].split(' ')[-1].split('/')[-1].replace('v','')
++            remote_file_name = self.uscan_info[1].split(' ')[-1].split('/')[-1].replace('v','')
 +            tar_file_name = '%s-%s' % (self.debian_name, remote_file_name)
 +            self.run_uupdate(tar_file_name)
 +            
@@ -42,6 +49,8 @@ Index: npm2deb/npm2deb/__init__.py
 +            utils.change_dir('../%s' % new_dir_name)
 +            self.run_buildpackage()
 +
++            self.edit_changelog()
++            
 +            debian_path = "%s/%s/debian" % (self.name, new_dir_name)
 +            print ('\nRemember, your new source directory is %s/%s' % (self.name, new_dir_name))
 +            
@@ -55,15 +64,33 @@ Index: npm2deb/npm2deb/__init__.py
 +        utils.change_dir(saved_path)
 +        _call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
 +
-+        if uscan_info[0] != 0:
++        if self.uscan_info[0] != 0:
 +            print ("\nUse uscan to get orig source files. Fix debian/watch and then run\
 +                    \n$ uscan --download-current-version\n")
 +
-+    
++
++    def edit_changelog(self):
++        """
++        This function is to remove extra line '* New upstream release' 
++        from debian/changelog 
++        """
++        with open('debian/changelog', 'r') as f:
++            data = f.read()
++        f.close()
++        
++        data_list = data.split('\n')
++        data_list.pop(3)
++
++        with open('debian/changelog', 'w') as f:
++            f.write('\n'.join(data_list))
++        f.close()
++        
 +    def run_buildpackage(self):
 +        print ("\nBuilding the binary package")
 +        _call('dpkg-source -b .', shell=True)
 +        _call('dpkg-buildpackage', shell=True)
++        # removing auto generated temporary files
++        _call('fakeroot debian/rules clean', shell=True)
 +
 +    def run_uupdate(self, tar_file):
 +        print ('\nCreating debian source package...')
@@ -78,13 +105,13 @@ Index: npm2deb/npm2deb/__init__.py
 +                                    '--package "{}" '
 +                                    '--upstream-version 0 --no-download'
 +                                    .format(self.debian_name))
-+        return info
++        self.uscan_info = info
 +
 +        
      def create_itp_bug(self):
          utils.debug(1, "creating wnpp bug template")
          utils.create_file('%s_itp.mail' % self.debian_name, self.get_ITP())
-@@ -118,11 +176,9 @@ class Npm2Deb(object):
+@@ -118,11 +196,9 @@ class Npm2Deb(object):
  
              utils.create_debian_file('watch', content)
              # test watch with uscan, raise exception if status is not 0
@@ -93,13 +120,13 @@ Index: npm2deb/npm2deb/__init__.py
 -                                    '--upstream-version 0 --no-download'
 -                                    .format(self.debian_name))
 -            if info[0] != 0:
-+            uscan_info = self.test_uscan()
++            self.test_uscan()
 +            
-+            if uscan_info[0] != 0:
++            if self.uscan_info[0] != 0:
                  raise ValueError
  
          except ValueError:
-@@ -330,6 +386,7 @@ class Npm2Deb(object):
+@@ -330,6 +406,7 @@ class Npm2Deb(object):
          self._get_json_version()
          self._get_json_license()
  
@@ -118,7 +145,7 @@ Index: npm2deb/npm2deb/scripts.py
 -        _utils.change_dir(saved_path)
 +        _utils.change_dir(npm2deb.debian_name)
 +        npm2deb.initiate_build(saved_path)
-+
++ 
      except OSError as os_error:
          print(str(os_error))
          exit(1)
