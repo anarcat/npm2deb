@@ -15,7 +15,7 @@ Index: npm2deb/npm2deb/__init__.py
 ===================================================================
 --- npm2deb.orig/npm2deb/__init__.py
 +++ npm2deb/npm2deb/__init__.py
-@@ -229,11 +229,29 @@ You may want fix first these issues:\n""
+@@ -238,11 +238,29 @@ and may not include tests.""")
  
      def create_install(self):
          content = ''
@@ -48,7 +48,7 @@ Index: npm2deb/npm2deb/__init__.py
          # install main if not in a subpath
          if 'main' in self.json:
              main = self.json['main']
-@@ -241,12 +259,13 @@ You may want fix first these issues:\n""
+@@ -250,12 +268,13 @@ and may not include tests.""")
              if main == 'index':
                  main = 'index.js'
              if not main.find('/') > 0:

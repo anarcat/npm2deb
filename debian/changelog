@@ -4,11 +4,12 @@ npm2deb (0.2.5-4) UNRELEASED; urgency=medium
   * Bump standards version of generated packages to 3.9.8
   * Fix vcs url (Closes: #842741), typo in copyright (Closes: #842742)
     (thanks to Evgeni Golov)
+  * fakeupstream service can now return dist tarballs (Closes: #840967)
 
   [ Suhail P ]
   * Fix dependency version formats (convert ^ to >=) (Closes: #840207)
   * Automate up to deb file creation (add uscan, uupdate and dpkg-buildpackage)
-    (Closes: #840174)
+    (Closes: #840174) 
 
   [ Shanavas M ]
   * When package.json has a files section, install them (Closes: #841995)
