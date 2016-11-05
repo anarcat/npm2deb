@@ -1,4 +1,4 @@
-npm2deb (0.2.5-4) UNRELEASED; urgency=medium
+npm2deb (0.2.5-4) unstable; urgency=medium
 
   * Team upload
   * Bump standards version of generated packages to 3.9.8
@@ -14,7 +14,7 @@ npm2deb (0.2.5-4) UNRELEASED; urgency=medium
   [ Shanavas M ]
   * When package.json has a files section, install them (Closes: #841995)
 
- -- Pirate Praveen <praveen@debian.org>  Sat, 29 Oct 2016 19:45:20 +0530
+ -- Pirate Praveen <praveen@debian.org>  Sat, 05 Nov 2016 12:43:32 +0530
 
 npm2deb (0.2.5-3) unstable; urgency=medium
 
