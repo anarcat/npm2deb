@@ -2,7 +2,9 @@ Source: npm2deb
 Section: devel
 Priority: extra
 Maintainer: Debian Javascript Maintainers <pkg-javascript-devel@lists.alioth.debian.org>
-Uploaders: Leo Iannacone <l3on@ubuntu.com>
+Uploaders:
+ Leo Iannacone <l3on@ubuntu.com>
+ , Pirate Praveen <praveen@debian.org>
 Build-Depends:
  debhelper (>= 9)
  , dh-python
