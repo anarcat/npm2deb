@@ -4,15 +4,17 @@ from dateutil import tz as _tz
 from shutil import rmtree as _rmtree
 from urllib.request import urlopen as _urlopen
 from subprocess import getstatusoutput as _getstatusoutput
+from subprocess import call as _call
 import os as _os
 import re as _re
+import tarfile
 
 from npm2deb import utils, templates
 from npm2deb.mapper import Mapper
 
-VERSION = '0.2.5'
+VERSION = '0.2.6'
 DEBHELPER = 9
-STANDARDS_VERSION = '3.9.7'
+STANDARDS_VERSION = '3.9.8'
 
 
 class Npm2Deb(object):
@@ -36,6 +38,7 @@ class Npm2Deb(object):
         self.debian_standards = STANDARDS_VERSION
         self.debian_debhelper = DEBHELPER
         self.noclean = False
+        self.upstream_watch = False
         if args:
             if 'upstream_license' in args and args['upstream_license']:
                 self.upstream_license = args['upstream_license']
@@ -53,7 +56,7 @@ class Npm2Deb(object):
                 self.noclean = args['noclean']
 
         self.read_package_info()
-        self.debian_name = 'node-%s' % self._debianize_name(self.name)
+        self.debian_name = 'node-%s' % utils.debianize_name(self.name)
         self.debian_author = 'FIX_ME debian author'
         if 'DEBFULLNAME' in _os.environ and 'DEBEMAIL' in _os.environ:
             self.debian_author = "%s <%s>" % \
@@ -84,6 +87,77 @@ class Npm2Deb(object):
             self.clean()
         utils.change_dir('..')
         self.create_itp_bug()
+
+    def initiate_build(self ,saved_path):
+        """
+        Try building deb package after creating required files using start().
+        'uscan', 'uupdate' and 'dpkg-buildpackage' are run if debian/watch is OK.
+        """
+        uscan_info = self.test_uscan()
+        if uscan_info[0] == 0:
+            self.run_uscan()
+            self.run_uupdate()
+
+            new_dir = '%s-%s' % (self.debian_name, self.upstream_version)
+            utils.change_dir('../%s' % new_dir)
+            self.run_buildpackage()
+            self.edit_changelog()
+
+            debian_path = "%s/%s/debian" % (self.name, new_dir)
+            print ('\nRemember, your new source directory is %s/%s' % (self.name, new_dir))
+
+        else:
+            debian_path = "%s/%s/debian" % (self.name, self.debian_name)
+
+        print("""
+This is not a crystal ball, so please take a look at auto-generated files.\n
+You may want fix first these issues:\n""")
+
+        utils.change_dir(saved_path)
+        _call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
+
+        if uscan_info[0] != 0:
+            print ("\nUse uscan to get orig source files. Fix debian/watch and then run\
+                    \n$ uscan --download-current-version\n")
+
+        if self.upstream_watch:
+            print ("""
+*** Warning ***\nUsing fakeupstream to download npm dist tarballs, because upstream
+git repo is missing tags. Its better to ask upstream to tag their releases
+instead of using npm dist tarballs as dist tarballs may contain pre built files
+and may not include tests.\n""")
+
+    def edit_changelog(self):
+        """
+        To remove extra line '* New upstream release'
+        from debian/changelog
+        """
+        _call("sed -i '/* New upstream release/d' debian/changelog", shell=True)
+
+    def run_buildpackage(self):
+        print ("\nBuilding the binary package")
+        _call('dpkg-source -b .', shell=True)
+        _call('dpkg-buildpackage', shell=True)
+        # removing auto generated temporary files
+        _call('debian/rules clean', shell=True)
+
+    def run_uupdate(self):
+        print ('\nCreating debian source package...')
+        _call('uupdate -b -f --upstream-version %s' % self.upstream_version, shell=True)
+
+    def run_uscan(self):
+        print ('\nDownloading source tarball file using debian/watch file...')
+        _call('uscan --download-version %s' % self.upstream_version, shell=True)
+
+    def test_uscan(self):
+        info = _getstatusoutput('uscan --watchfile "debian/watch" '
+                                '--package "{}" '
+                                '--upstream-version 0 '
+                                '--download-version {} '
+                                '--no-download'
+                                .format(self.debian_name, self.upstream_version))
+        return info
+
 
     def create_itp_bug(self):
         utils.debug(1, "creating wnpp bug template")
@@ -118,14 +192,13 @@ class Npm2Deb(object):
 
             utils.create_debian_file('watch', content)
             # test watch with uscan, raise exception if status is not 0
-            info = _getstatusoutput('uscan --watchfile "debian/watch" '
-                                    '--package "{}" '
-                                    '--upstream-version 0 --no-download'
-                                    .format(self.debian_name))
-            if info[0] != 0:
+            uscan_info = self.test_uscan()
+
+            if uscan_info[0] != 0:
                 raise ValueError
 
         except ValueError:
+            self.upstream_watch = True
             content = utils.get_watch('fakeupstream') % args
             utils.create_debian_file('watch', content)
 
@@ -153,11 +226,29 @@ class Npm2Deb(object):
 
     def create_install(self):
         content = ''
-        libs = ['package.json']
+        libs = {'package.json'}
         if _os.path.isdir('bin'):
-            libs.append('bin')
+            libs.add('bin')
         if _os.path.isdir('lib'):
-            libs.append('lib')
+            libs.add('lib')
+
+        # install files from directories field
+        if 'directories' in self.json:
+            directories = self.json['directories']
+            if 'bin' in directories:
+                libs.add(directories['bin'])
+            if 'lib' in directories:
+                libs.add(directories['lib'])
+
+        # install files from files field
+        if 'files' in self.json:
+            files = self.json['files']
+            # npm v1.4 returns string if files field has only one entry
+            if isinstance(files, str):
+                libs.add(files)
+            else:
+                libs = libs.union(files)
+
         # install main if not in a subpath
         if 'main' in self.json:
             main = self.json['main']
@@ -165,12 +256,13 @@ class Npm2Deb(object):
             if main == 'index':
                 main = 'index.js'
             if not main.find('/') > 0:
-                libs.append(_os.path.normpath(main))
+                libs.add(_os.path.normpath(main))
         else:
             if _os.path.exists('index.js'):
-                libs.append('index.js')
+                libs.add('index.js')
             else:
-                libs.append('*.js')
+                libs.add('*.js')
+
         for filename in libs:
             content += "%s %s/\n" % (filename, self.debian_dest)
         utils.create_debian_file('install', content)
@@ -330,23 +422,25 @@ class Npm2Deb(object):
         self._get_json_version()
         self._get_json_license()
 
+
     def download(self):
-        utils.debug(1, "downloading %s via npm" % self.name)
-        info = _getstatusoutput('npm install "%s"' % self.name)
+        utils.debug(1, "downloading %s tarball from npm registry" % self.name)
+        info = _getstatusoutput('npm pack "%s"' % self.name)
         if info[0] is not 0:
             exception = "Error downloading package %s\n" % self.name
             exception += info[1]
             raise ValueError(exception)
-        # move dir from npm root
-        root = _getstatusoutput('npm root')[1].strip('\n')
-        _os.rename(_os.path.join(root, self.name), self.name)
-        try:
-            _os.rmdir(root)  # remove only if empty
-        except OSError:
-            pass
-        # remove any dependency downloaded via npm
-        if _os.path.isdir("%s/node_modules" % self.name):
-            _rmtree("%s/node_modules" % self.name)
+
+        tarball_file = info[1].strip('\n')
+        tarball = tarfile.open(tarball_file)
+        tarball.extractall()
+        tarball.close()
+
+        # rename extracted directory
+        _os.rename('package', self.name)
+        # remove tarball file
+        _os.remove(tarball_file)
+
         if self.name is not self.debian_name:
             utils.debug(2, "renaming %s to %s" % (self.name, self.debian_name))
             _os.rename(self.name, self.debian_name)
@@ -412,13 +506,17 @@ class Npm2Deb(object):
 
     def _get_json_repo_url(self):
         result = 'FIX_ME repo url'
+        url = None
         if 'repository' in self.json:
             repository = self.json['repository']
             if isinstance(repository, str):
                 url = repository
             elif isinstance(repository, dict) and 'url' in repository:
                 url = repository['url']
-            if url.startswith('git') or (isinstance(repository, dict) and
+
+            if not url:
+                pass            # repository field is not in expected format
+            elif url.startswith('git') or (isinstance(repository, dict) and
                                          'type' in repository and
                                          repository['type'] == 'git'):
                 if url.find('github') >= 0:
@@ -456,8 +554,9 @@ class Npm2Deb(object):
                     name = 'node-%s' % dep
                     mapper.append_warning('error', dep, 'dependency %s '
                                           'not in debian' % (name))
-                version = dependencies[dep].replace('~', '')
+                version = dependencies[dep]
                 if version:
+                    version = version.lower().replace('~', '').replace('^', '').replace('.x', '.0')
                     if version[0].isdigit():
                         version = '>= %s' % version
                     elif version == '*' or version == 'latest':
@@ -469,9 +568,6 @@ class Npm2Deb(object):
                 depends.append(dep_debian)
 
         return '\n , '.join(depends)
-
-    def _debianize_name(self, name):
-        return name.replace('_', '-')
 
     def _get_github_url_from_git(self, url):
         result = _getstatusoutput(
