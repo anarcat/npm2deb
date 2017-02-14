@@ -9,11 +9,9 @@ Subject: [PATCH 1/2] Distinguish upstream description from Debian package
  npm2deb/templates.py | 27 ++++++++++++++++++---------
  2 files changed, 25 insertions(+), 15 deletions(-)
 
-diff --git a/npm2deb/__init__.py b/npm2deb/__init__.py
-index 0ac807bb..1aa9ad28 100644
 --- a/npm2deb/__init__.py
 +++ b/npm2deb/__init__.py
-@@ -29,7 +29,7 @@ class Npm2Deb(object):
+@@ -29,7 +29,7 @@
          self.json = None
          self.args = args
          self.homepage = None
@@ -22,7 +20,7 @@ index 0ac807bb..1aa9ad28 100644
          self.upstream_author = None
          self.upstream_license = None
          self.upstream_version = None
-@@ -295,8 +295,8 @@ and may not include tests.\n""")
+@@ -295,8 +295,8 @@
                                % self.debian_name
          args['Package'] = self.debian_name
          args['Depends'] = self._get_Depends()
@@ -33,7 +31,7 @@ index 0ac807bb..1aa9ad28 100644
          template = utils.get_template('control')
          utils.create_debian_file('control', template % args)
  
-@@ -451,7 +451,8 @@ and may not include tests.\n""")
+@@ -451,7 +451,8 @@
          args['debian_name'] = self.debian_name
          args['upstream_author'] = self.upstream_author
          args['homepage'] = self.homepage
@@ -43,7 +41,7 @@ index 0ac807bb..1aa9ad28 100644
          args['version'] = self.upstream_version
          args['license'] = self.upstream_license
          content = utils.get_template('wnpp')
-@@ -485,9 +486,9 @@ and may not include tests.\n""")
+@@ -485,9 +486,9 @@
  
      def _get_json_description(self):
          if 'description' in self.json:
@@ -55,16 +53,13 @@ index 0ac807bb..1aa9ad28 100644
  
      def _get_json_author(self):
          if self.upstream_author:
-diff --git a/npm2deb/templates.py b/npm2deb/templates.py
-index 9bda4ee3..f88861e6 100644
 --- a/npm2deb/templates.py
 +++ b/npm2deb/templates.py
-@@ -6,6 +6,20 @@ CHANGELOG = """%(debian_name)s (%(version)s-1) UNRELEASED; urgency=low
+@@ -6,6 +6,19 @@
  
  """
  
-+description_template = """
-+ Write the short and long descriptions for the Debian package as
++description_template = """ Write the short and long descriptions for the Debian package as
 + explained in the Developer's Reference, §6.2.1 – §6.2.3.
 + .
 + You can start with the short upstream package description,
@@ -80,7 +75,7 @@ index 9bda4ee3..f88861e6 100644
  CONTROL = """Source: %(Source)s
  Section: web
  Priority: optional
-@@ -26,10 +40,7 @@ Depends:
+@@ -26,10 +39,7 @@
   ${misc:Depends}
   , %(Depends)s
  Description: %(Description)s
@@ -92,7 +87,7 @@ index 9bda4ee3..f88861e6 100644
  
  RULES = """#!/usr/bin/make -f
  # -*- makefile -*-
-@@ -80,11 +91,9 @@ X-Debbugs-CC: debian-devel@lists.debian.org
+@@ -80,11 +90,9 @@
    Programming Lang: JavaScript
    Description     : %(description)s
  
@@ -107,6 +102,3 @@ index 9bda4ee3..f88861e6 100644
  
  LICENSES = {}
  
--- 
-2.11.0
-

@@ -7,11 +7,9 @@ Subject: [PATCH 2/2] Add suggestions to improve the ITP report.
  npm2deb/templates.py | 11 ++++++++++-
  1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/npm2deb/templates.py b/npm2deb/templates.py
-index f88861e6..475f7451 100644
 --- a/npm2deb/templates.py
 +++ b/npm2deb/templates.py
-@@ -93,7 +93,16 @@ X-Debbugs-CC: debian-devel@lists.debian.org
+@@ -92,7 +92,16 @@
  
   FIX_ME: This ITP report is not ready for submission, until you are
   confident this package description is ready for Debian.
@@ -29,6 +27,3 @@ index f88861e6..475f7451 100644
  
  LICENSES = {}
  
--- 
-2.11.0
-
