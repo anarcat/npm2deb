@@ -1,0 +1,112 @@
+From 03cd5adac01c51077cff3edacad1fc9f4ee562c3 Mon Sep 17 00:00:00 2001
+From: Ben Finney <bignose@debian.org>
+Date: Fri, 10 Feb 2017 04:37:45 +1100
+Subject: [PATCH 1/2] Distinguish upstream description from Debian package
+ description.
+
+---
+ npm2deb/__init__.py  | 13 +++++++------
+ npm2deb/templates.py | 27 ++++++++++++++++++---------
+ 2 files changed, 25 insertions(+), 15 deletions(-)
+
+diff --git a/npm2deb/__init__.py b/npm2deb/__init__.py
+index 0ac807bb..1aa9ad28 100644
+--- a/npm2deb/__init__.py
++++ b/npm2deb/__init__.py
+@@ -29,7 +29,7 @@ class Npm2Deb(object):
+         self.json = None
+         self.args = args
+         self.homepage = None
+-        self.description = None
++        self.upstream_description = None
+         self.upstream_author = None
+         self.upstream_license = None
+         self.upstream_version = None
+@@ -295,8 +295,8 @@ and may not include tests.\n""")
+                               % self.debian_name
+         args['Package'] = self.debian_name
+         args['Depends'] = self._get_Depends()
+-        args['Description'] = self.description
+-        args['Description_Long'] = 'FIX_ME long description'
++        args['Description'] = 'FIX_ME write the Debian package description'
++        args['upstream_description'] = self.upstream_description
+         template = utils.get_template('control')
+         utils.create_debian_file('control', template % args)
+ 
+@@ -451,7 +451,8 @@ and may not include tests.\n""")
+         args['debian_name'] = self.debian_name
+         args['upstream_author'] = self.upstream_author
+         args['homepage'] = self.homepage
+-        args['description'] = self.description
++        args['description'] = 'FIX_ME write the Debian package description'
++        args['upstream_description'] = self.upstream_description
+         args['version'] = self.upstream_version
+         args['license'] = self.upstream_license
+         content = utils.get_template('wnpp')
+@@ -485,9 +486,9 @@ and may not include tests.\n""")
+ 
+     def _get_json_description(self):
+         if 'description' in self.json:
+-            self.description = self.json['description']
++            self.upstream_description = self.json['description']
+         else:
+-            self.description = 'FIX_ME description'
++            self.upstream_description = 'FIX_ME no upstream package description'
+ 
+     def _get_json_author(self):
+         if self.upstream_author:
+diff --git a/npm2deb/templates.py b/npm2deb/templates.py
+index 9bda4ee3..f88861e6 100644
+--- a/npm2deb/templates.py
++++ b/npm2deb/templates.py
+@@ -6,6 +6,20 @@ CHANGELOG = """%(debian_name)s (%(version)s-1) UNRELEASED; urgency=low
+ 
+ """
+ 
++description_template = """
++ Write the short and long descriptions for the Debian package as
++ explained in the Developer's Reference, §6.2.1 – §6.2.3.
++ .
++ You can start with the short upstream package description,
++ “%(upstream_description)s”.
++ .
++ Be aware that most upstream package descriptions are not written to
++ conform with Debian package guidelines. You need to explain the role
++ of this package for a Debian audience.
++ .
++ Node.js is an event-based server-side JavaScript engine.
++"""
++
+ CONTROL = """Source: %(Source)s
+ Section: web
+ Priority: optional
+@@ -26,10 +40,7 @@ Depends:
+  ${misc:Depends}
+  , %(Depends)s
+ Description: %(Description)s
+- %(Description_Long)s
+- .
+- Node.js is an event-based server-side JavaScript engine.
+-"""
++""" + description_template
+ 
+ RULES = """#!/usr/bin/make -f
+ # -*- makefile -*-
+@@ -80,11 +91,9 @@ X-Debbugs-CC: debian-devel@lists.debian.org
+   Programming Lang: JavaScript
+   Description     : %(description)s
+ 
+- FIX_ME bug long description
+- .
+- Node.js is an event-based server-side JavaScript engine.
+-
+-"""
++ FIX_ME: This ITP report is not ready for submission, until you are
++ confident this package description is ready for Debian.
++ .""" + description_template
+ 
+ LICENSES = {}
+ 
+-- 
+2.11.0
+
