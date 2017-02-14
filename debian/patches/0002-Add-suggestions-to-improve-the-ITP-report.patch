@@ -9,12 +9,13 @@ Subject: [PATCH 2/2] Add suggestions to improve the ITP report.
 
 --- a/npm2deb/templates.py
 +++ b/npm2deb/templates.py
-@@ -92,7 +92,16 @@
+@@ -92,7 +92,17 @@
  
   FIX_ME: This ITP report is not ready for submission, until you are
   confident this package description is ready for Debian.
 - .""" + description_template
-+ .""" + description_template + """
++ .
++""" + description_template + """
 +FIX_ME: Explain why this package is suitable for adding to Debian. Is
 +it a dependency of some other package? What benefit does it provide
 +compared to other similar packages already in Debian?
