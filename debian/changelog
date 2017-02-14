@@ -1,8 +1,12 @@
 npm2deb (0.2.6-2) unstable; urgency=medium
 
-  [ Tushar Agey ]
+  [ Tushar Agey, Suhail P ]
   * search-in-experimental.patch: Search for existing packages using rmadison
     (Closes: #852775)
+
+  [ Ben Finney ]
+
+  * strongly encourage writing a proper package description (Closes: #854675)
 
  -- Pirate Praveen <praveen@debian.org>  Wed, 01 Feb 2017 22:35:29 +0530
 
