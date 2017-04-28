@@ -1,8 +1,9 @@
-npm2deb (0.2.6-3) UNRELEASED; urgency=medium
+npm2deb (0.2.6-3) unstable; urgency=medium
 
-  * Highlight FIX_MEs in itp.mail template too 
+  * Highlight FIX_MEs in itp.mail template too
+  * Fix for modules with a different root dir in dist tarball 
 
- -- Pirate Praveen <praveen@debian.org>  Thu, 16 Feb 2017 15:46:20 +0530
+ -- Pirate Praveen <praveen@debian.org>  Fri, 28 Apr 2017 17:26:45 +0530
 
 npm2deb (0.2.6-2) unstable; urgency=medium
 
