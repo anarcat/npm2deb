@@ -3,3 +3,4 @@ search-in-experimental.patch
 0002-Add-suggestions-to-improve-the-ITP-report.patch
 0003-hint-ITP.patch
 0004-fix-for-editorconfig.patch
+0005-fix-for-man-array.patch
