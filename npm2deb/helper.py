@@ -6,7 +6,7 @@ from subprocess import getstatusoutput as _getstatusoutput
 import re as _re
 
 from npm2deb import Npm2Deb as _Npm2Deb
-from npm2deb.utils import debug as _debug
+from npm2deb.utils import debug as _debug, debianize_name as _debianize_name
 from npm2deb.mapper import Mapper as _Mapper
 
 
@@ -17,10 +17,12 @@ def my_print(what):
     if DO_PRINT:
         print(what)
 
-
 def search_for_repository(module):
     if isinstance(module, _Npm2Deb):
-        module = module.name
+        module = module.debian_name
+    else:
+        module = 'node-%s' % _debianize_name(module)
+
     repositories = ['collab-maint', 'pkg-javascript']
     formatted = "  {0:40} -- {1}"
     found = False
@@ -50,7 +52,10 @@ def search_for_repository(module):
 
 def search_for_bug(module):
     if isinstance(module, _Npm2Deb):
-        module = module.name
+        module = module.debian_name
+    else:
+        module = 'node-%s' % _debianize_name(module)
+
     my_print('Looking for wnpp bugs:')
     _debug(1, "calling wnpp-check")
     info = _getstatusoutput('wnpp-check %s' % module)
@@ -77,32 +82,6 @@ def search_for_bug(module):
             except:
                     continue
         return result
-
-def search_in_new(module):
-    if isinstance(module, _Npm2Deb):
-        module = module.name
-    my_print('Looking for packages in NEW:')
-    _debug(1, "calling new-check")
-    found = False
-    formatted = "  {0:20} {1:>3}"
-    url = "https://api.ftp-master.debian.org/sources_in_suite/new"
-    _debug(1, "opening url %s" % url)
-    data = _urlopen(url).read().decode('utf-8')
-    data = _parseJSON(data)
-    result = []
-    for package in data:
-        name = package['source']
-        version = package['version']
-        if not module in name:
-            continue
-        found = True
-        result.append(package)
-        my_print(formatted.format(package['source'],
-                                  package['version']
-                                 ))
-    if not found:
-        my_print("  None")
-    return result
 
 def search_for_reverse_dependencies(module):
     if isinstance(module, _Npm2Deb):

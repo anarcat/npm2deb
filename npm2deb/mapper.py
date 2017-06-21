@@ -2,6 +2,7 @@ from json import loads as _parseJSON
 from re import findall as _findall
 from urllib.request import urlopen as _urlopen
 from subprocess import getstatusoutput as _getstatusoutput
+from fnmatch import fnmatch as _fnmatch
 
 from npm2deb.utils import debug as _debug
 from npm2deb.utils import debianize_name as _debianize_name
@@ -35,10 +36,19 @@ class Mapper(object):
         result['info'] = None
         result['name'] = None
         result['version'] = None
+        result['suite'] = None
         result['repr'] = None
+        db_package = None
 
         if node_module in self.json:
             db_package = self.json[node_module]
+        else:
+            for pattern in self.json.keys():
+                if _fnmatch(node_module, pattern):
+                    db_package = self.json[pattern]
+                    break
+
+        if db_package:
             if 'replace' in db_package:
                 result['name'] = db_package['replace']
             if 'info' in db_package:
@@ -58,7 +68,7 @@ class Mapper(object):
             return result
 
         madison = _getstatusoutput(
-            'rmadison -s sid "%s" | grep source' % result['name'])
+            'rmadison -u debian "%s" | grep source' % result['name'])
 
         if madison[0] != 0:
             result['name'] = None
@@ -68,6 +78,7 @@ class Mapper(object):
         if len(tmp) >= 2:
             result['name'] = tmp[0].strip()
             result['version'] = tmp[1].strip()
+            result['suite'] = tmp[2].strip()
             result['repr'] = '%s (%s)' % (result['name'], result['version'])
 
         return result
