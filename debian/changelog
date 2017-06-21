@@ -1,3 +1,9 @@
+npm2deb (0.2.7-1) UNRELEASED; urgency=medium
+
+  * New upsteam release
+
+ -- Pirate Praveen <praveen@debian.org>  Wed, 21 Jun 2017 16:16:26 +0530
+
 npm2deb (0.2.6-4) unstable; urgency=medium
 
   * Check man field is not an array (fixes packages like sshpk) 
