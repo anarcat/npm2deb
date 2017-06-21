@@ -29,7 +29,7 @@ class Npm2Deb(object):
         self.json = None
         self.args = args
         self.homepage = None
-        self.description = None
+        self.upstream_description = None
         self.upstream_author = None
         self.upstream_license = None
         self.upstream_version = None
@@ -115,6 +115,7 @@ You may want fix first these issues:\n""")
 
         utils.change_dir(saved_path)
         _call('/bin/grep --color=auto FIX_ME -r %s/*' % debian_path, shell=True)
+        _call('/bin/grep --color=auto FIX_ME -r -H %s/*_itp.mail' % self.name, shell=True)
 
         if uscan_info[0] != 0:
             print ("\nUse uscan to get orig source files. Fix debian/watch and then run\
@@ -173,9 +174,13 @@ and may not include tests.\n""")
                     _os.remove(filename)
 
     def create_manpages(self):
-        if 'man' in self.json:
-            content = _os.path.normpath(self.json['man'])
-            utils.create_debian_file('manpages', content)
+        if not 'man' in self.json:
+            return
+        mans = self.json['man']
+        if not isinstance(mans, (list, tuple)):
+            mans = [mans]
+        paths = [_os.path.normpath(manpath) for manpath in mans]
+        utils.create_debian_file('manpages', "\n".join(paths))
 
     def create_watch(self):
         args = {}
@@ -226,42 +231,9 @@ and may not include tests.\n""")
 
     def create_install(self):
         content = ''
-        libs = {'package.json'}
-        if _os.path.isdir('bin'):
-            libs.add('bin')
-        if _os.path.isdir('lib'):
-            libs.add('lib')
-
-        # install files from directories field
-        if 'directories' in self.json:
-            directories = self.json['directories']
-            if 'bin' in directories:
-                libs.add(directories['bin'])
-            if 'lib' in directories:
-                libs.add(directories['lib'])
-
-        # install files from files field
-        if 'files' in self.json:
-            files = self.json['files']
-            # npm v1.4 returns string if files field has only one entry
-            if isinstance(files, str):
-                libs.add(files)
-            else:
-                libs = libs.union(files)
-
-        # install main if not in a subpath
-        if 'main' in self.json:
-            main = self.json['main']
-            main = _os.path.normpath(main)
-            if main == 'index':
-                main = 'index.js'
-            if not main.find('/') > 0:
-                libs.add(_os.path.normpath(main))
-        else:
-            if _os.path.exists('index.js'):
-                libs.add('index.js')
-            else:
-                libs.add('*.js')
+        libs = _os.listdir()
+        # remove debian directory
+        libs.remove('debian')
 
         for filename in libs:
             content += "%s %s/\n" % (filename, self.debian_dest)
@@ -295,8 +267,8 @@ and may not include tests.\n""")
                               % self.debian_name
         args['Package'] = self.debian_name
         args['Depends'] = self._get_Depends()
-        args['Description'] = self.description
-        args['Description_Long'] = 'FIX_ME long description'
+        args['Description'] = 'FIX_ME write the Debian package description'
+        args['upstream_description'] = self.upstream_description
         template = utils.get_template('control')
         utils.create_debian_file('control', template % args)
 
@@ -433,11 +405,18 @@ and may not include tests.\n""")
 
         tarball_file = info[1].strip('\n')
         tarball = tarfile.open(tarball_file)
+        # get the root directory name
+        root_dir = tarball.getnames()[0]
+        # extract root directory name if memberfile contains '/'
+        index_of_slash = root_dir.find('/')
+        if index_of_slash != -1:
+            root_dir = root_dir[:index_of_slash]
+
         tarball.extractall()
         tarball.close()
 
         # rename extracted directory
-        _os.rename('package', self.name)
+        _os.rename(root_dir, self.name)
         # remove tarball file
         _os.remove(tarball_file)
 
@@ -451,7 +430,8 @@ and may not include tests.\n""")
         args['debian_name'] = self.debian_name
         args['upstream_author'] = self.upstream_author
         args['homepage'] = self.homepage
-        args['description'] = self.description
+        args['description'] = 'FIX_ME write the Debian package description'
+        args['upstream_description'] = self.upstream_description
         args['version'] = self.upstream_version
         args['license'] = self.upstream_license
         content = utils.get_template('wnpp')
@@ -485,9 +465,9 @@ and may not include tests.\n""")
 
     def _get_json_description(self):
         if 'description' in self.json:
-            self.description = self.json['description']
+            self.upstream_description = self.json['description']
         else:
-            self.description = 'FIX_ME description'
+            self.upstream_description = 'FIX_ME no upstream package description'
 
     def _get_json_author(self):
         if self.upstream_author:
@@ -535,13 +515,14 @@ and may not include tests.\n""")
     def _get_json_homepage(self):
         if self.homepage:
             return
-        result = 'FIX_ME homepage'
+
         if 'homepage' in self.json:
-            result = self.json['homepage']
+            self.homepage = self.json['homepage']
         elif self.upstream_repo_url and not \
-                self.upstream_repo_url.find('FIX_ME') >= 0:
-            result = self.upstream_repo_url
-        self.homepage = result
+             self.upstream_repo_url.find('FIX_ME') >= 0:
+            self.homepage = self.upstream_repo_url
+        else:
+            self.homepage = utils.get_npmjs_homepage(self.name)
 
     def _get_Depends(self):
         depends = ['nodejs']
