@@ -1,8 +1,9 @@
-npm2deb (0.2.7-1) UNRELEASED; urgency=medium
+npm2deb (0.2.7-1) unstable; urgency=medium
 
   * New upsteam release
+  * Remove patches already applied upstream
 
- -- Pirate Praveen <praveen@debian.org>  Wed, 21 Jun 2017 16:16:26 +0530
+ -- Pirate Praveen <praveen@debian.org>  Wed, 21 Jun 2017 16:23:23 +0530
 
 npm2deb (0.2.6-4) unstable; urgency=medium
 
