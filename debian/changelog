@@ -1,3 +1,11 @@
+npm2deb (0.2.7-2) unstable; urgency=medium
+
+  * Set standards version of created package to 4.0.0
+  * Blacklist unwanted files from created package's debian/install
+    (Closes: #867295)
+
+ -- Pirate Praveen <praveen@debian.org>  Sun, 30 Jul 2017 17:32:50 +0530
+
 npm2deb (0.2.7-1) unstable; urgency=medium
 
   * New upstream release
