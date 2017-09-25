@@ -1,0 +1,23 @@
+From 001a6edcbd94bdba1056b6932bae6248a68840f3 Mon Sep 17 00:00:00 2001
+From: Pirate Praveen Arimbrathodiyil <praveen@debian.org>
+Date: Mon, 25 Sep 2017 12:15:13 +0530
+Subject: [PATCH] change section to javascript
+
+section javascript is now created in the archive for nodejs/javascript packages
+---
+ npm2deb/templates.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/npm2deb/templates.py b/npm2deb/templates.py
+index 239edb7..08f60ce 100644
+--- a/npm2deb/templates.py
++++ b/npm2deb/templates.py
+@@ -20,7 +20,7 @@
+ """
+ 
+ CONTROL = """Source: %(Source)s
+-Section: web
++Section: javascript
+ Priority: optional
+ Maintainer: Debian Javascript Maintainers <pkg-javascript-devel@lists.alioth.debian.org>
+ Uploaders: %(Uploaders)s
