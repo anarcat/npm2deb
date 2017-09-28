@@ -1,0 +1,23 @@
+From 08c495f192e7f47efcf8b19aa19245e351f54851 Mon Sep 17 00:00:00 2001
+From: Pirate Praveen Arimbrathodiyil <praveen@debian.org>
+Date: Thu, 28 Sep 2017 22:25:24 +0530
+Subject: [PATCH] take the last result of rmadison
+
+take the last result of rmadison for latest version (currently it takes the oldest version in result). Fixes #86.
+---
+ npm2deb/mapper.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/npm2deb/mapper.py b/npm2deb/mapper.py
+index 65eac5f..2119baa 100644
+--- a/npm2deb/mapper.py
++++ b/npm2deb/mapper.py
+@@ -68,7 +68,7 @@ def get_debian_package(self, node_module):
+             return result
+ 
+         madison = _getstatusoutput(
+-            'rmadison -u debian "%s" | grep source' % result['name'])
++            'rmadison -u debian "%s" | grep source | tail -1' % result['name'])
+ 
+         if madison[0] != 0:
+             result['name'] = None
