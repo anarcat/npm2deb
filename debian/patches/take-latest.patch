@@ -17,7 +17,7 @@ index 65eac5f..2119baa 100644
  
          madison = _getstatusoutput(
 -            'rmadison -u debian "%s" | grep source' % result['name'])
-+            'rmadison -u debian "%s" | grep source | tail -1' % result['name'])
++            'rmadison -u debian "%s" | tac | grep source' % result['name'])
  
          if madison[0] != 0:
              result['name'] = None
