@@ -1,3 +1,9 @@
+npm2deb (0.2.7-6) unstable; urgency=medium
+
+  * Bump standards version to 4.1.1 (both for npm2deb and created packages)
+
+ -- Pirate Praveen <praveen@debian.org>  Mon, 23 Oct 2017 13:03:13 +0530
+
 npm2deb (0.2.7-5) unstable; urgency=medium
 
   * Use tac instead of tail (fixes js-task-wiki-edit script)
