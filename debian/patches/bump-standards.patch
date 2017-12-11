@@ -16,7 +16,7 @@ index 3f7c187..9586ffb 100644
  VERSION = '0.2.6'
  DEBHELPER = 9
 -STANDARDS_VERSION = '3.9.8'
-+STANDARDS_VERSION = '4.1.1'
++STANDARDS_VERSION = '4.1.2'
  
  
  class Npm2Deb(object):
