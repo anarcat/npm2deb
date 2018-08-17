@@ -6,7 +6,7 @@ Uploaders:
  Leo Iannacone <l3on@ubuntu.com>
  , Pirate Praveen <praveen@debian.org>
 Build-Depends:
- debhelper (>= 9)
+ debhelper (>= 11~)
  , dh-python
  , python3-all
  , python3-dateutil
