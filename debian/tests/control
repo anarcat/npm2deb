@@ -1,0 +1,7 @@
+Test-Command: set -e
+ ; cd "$AUTOPKGTEST_TMP"
+ ;  npm2deb search pretty-ms
+ ;  npm2deb depends pretty-ms
+ ;  npm2deb create @ava/write-file-atomic
+Depends: @
+Restrictions: allow-stderr
