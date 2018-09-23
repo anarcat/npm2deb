@@ -1,3 +1,11 @@
+npm2deb (0.2.8-2) unstable; urgency=medium
+
+  * Add basic autopkgtest
+  * Bump Standards-Version to 4.2.1 (no changes needed)
+  * Drop X-Python3-version field (obsolete)
+
+ -- Pirate Praveen <praveen@debian.org>  Sun, 23 Sep 2018 19:41:39 +0530
+
 npm2deb (0.2.8-1) unstable; urgency=medium
 
   [ Pirate Praveen ]
