@@ -1,4 +1,4 @@
-Test-Command: set -e
+Test-Command: set -ex
  ; cd "$AUTOPKGTEST_TMP"
  ;  npm2deb search pretty-ms
  ;  npm2deb depends pretty-ms
