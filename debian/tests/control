@@ -2,6 +2,8 @@ Test-Command: set -ex
  ; cd "$AUTOPKGTEST_TMP"
  ;  npm2deb search pretty-ms
  ;  npm2deb depends pretty-ms
+ ;  npm2deb create pretty-ms@2.0.0
  ;  npm2deb create @ava/write-file-atomic
+ ;  npm2deb create @types/jquery@2.0.49
 Depends: @
 Restrictions: allow-stderr
