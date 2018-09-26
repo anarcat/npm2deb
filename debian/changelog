@@ -1,3 +1,12 @@
+npm2deb (0.2.8-3) unstable; urgency=medium
+
+  * Add set -x to autopkgtest script
+  * Add patch to fix modules with @ in name (Closes: #909101)
+    Thanks to Ashutosh Kumar Singh (juggernaut451) for the patch
+  * Add more test cases to autopkgtest
+
+ -- Pirate Praveen <praveen@debian.org>  Thu, 27 Sep 2018 00:35:44 +0530
+
 npm2deb (0.2.8-2) unstable; urgency=medium
 
   * Add basic autopkgtest
