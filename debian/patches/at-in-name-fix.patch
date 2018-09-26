@@ -1,0 +1,28 @@
+From 68a54a8c8b77f132c257423c773143d0fcd03b55 Mon Sep 17 00:00:00 2001
+From: juggernaut451 <singhjug1994@gmail.com>
+Date: Wed, 26 Sep 2018 22:23:32 +0530
+Subject: [PATCH 1/2] npm version bug fix
+
+---
+ npm2deb/utils.py | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+--- a/npm2deb/utils.py
++++ b/npm2deb/utils.py
+@@ -138,6 +138,9 @@
+ 
+ def parse_name(name):
+     parts = name.partition('@')
++    if parts[0] == '':
++        version = parts[2].partition('@')
++        return '@'+version[0], version[2]
+     return parts[0], parts[2]
+ 
+ 
+@@ -220,4 +223,4 @@
+ 
+     raise RuntimeError('npm2deb will abort further execution because Python 3 '
+                        'was configured to use ASCII as encoding for the '
+-                       'environment.' + extra)
++                       'environment.' + extra)
+\ No newline at end of file
